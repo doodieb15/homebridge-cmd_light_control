@@ -1,0 +1,19 @@
+{
+  "name": "homebridge-cmd_light_control",
+  "version": "0.0.1",
+  "description": "Homebridge Plug in to control my lights from cmd files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doodieb15/homebridge-cmd_light_control.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doodieb15/homebridge-cmd_light_control/issues"
+  },
+  "homepage": "https://github.com/doodieb15/homebridge-cmd_light_control#readme"
+}
