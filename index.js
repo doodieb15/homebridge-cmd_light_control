@@ -14,11 +14,12 @@ function CmdAccessory(log, config) {
     // url info
     this.on_cmd = config["on_cmd"];
     this.off_cmd = config["off_cmd"];
+    this.getStatus_cmd = config["get_status_cmd"]
     this.brightness_cmd = config["brightness_cmd"];
     this.name = config["name"];
     this.service = config["service"] || "Switch";
-    this.brightnessHandling     = config["brightnessHandling"] 	 	|| "no";
-
+    this.brightnessHandling = config["brightnessHandling"] || "no";
+    this.getTemperature_cmd = config["get_temperature_cmd"];
 
 }
 
@@ -57,6 +58,80 @@ CmdAccessory.prototype = {
             }
         }.bind(this));
     },
+    getPowerState: function (callback) {
+        var cmd;
+
+        if (!this.getStatus_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmdl defined."));
+            return;
+        }
+
+        this.log("Getting power state");
+
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get power function failed: %s', error.message);
+                callback(error);
+            } else {
+                var binaryState = response;
+                var powerOn = binaryState > 0;
+                this.log("Power state is currently %s", binaryState);
+                callback(null, powerOn);
+            }
+
+        }.bind(this));
+    },
+    getBrightness: function (callback) {
+        if (!this.getStatus_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
+
+        this.log("Getting brightness level");
+
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get brightness function failed: %s', error.message);
+                callback(error);
+            } else {
+                var binaryState = response;
+                this.log("Brightness level is currently %s", binaryState);
+                callback(null, parseFloat(binaryState));
+            }
+
+        }.bind(this));
+    },
+    getTemperature: function (callback) {
+        if (!this.getTemperature_cmd) {
+            this.log.warn("Ignoring request; No Get Temperature cmd defined.");
+            callback(new Error("No get Temperature cmd defined."));
+            return;
+        }
+
+        this.log("Getting Temperature level");
+
+
+        cmd = this.getTemperature_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get Temperature function failed: %s', error.message);
+                callback(error);
+            } else {
+                var binaryState = response;
+                this.log("Temperature level is currently %s", binaryState);
+                callback(null, parseFloat(binaryState));
+            }
+
+        }.bind(this));},
 
     setBrightness: function (level, callback) {
 
@@ -109,21 +184,31 @@ CmdAccessory.prototype = {
                 this.switchService = new Service.Switch(this.name);
                 this.switchService
                     .getCharacteristic(Characteristic.On)
-                    .on('set', this.setPowerState.bind(this));
+                    .on('set', this.setPowerState.bind(this))
+                    .on('get', this.getPowerState.bind(this));
                 return [this.switchService];
                 break;
             case "Light":
                 this.lightbulbService = new Service.Lightbulb(this.name);
                 this.lightbulbService
                     .getCharacteristic(Characteristic.On)
-                    .on('set', this.setPowerState.bind(this));
+                    .on('set', this.setPowerState.bind(this))
+                    .on('get', this.getPowerState.bind(this));
                 if (this.brightnessHandling == "yes") {
                     this.lightbulbService
                         .addCharacteristic(new Characteristic.Brightness())
-                        .on('set', this.setBrightness.bind(this));
+                        .on('set', this.setBrightness.bind(this))
+                        .on('get', this.getBrightness.bind(this));
                 }
 
                 return [informationService, this.lightbulbService];
+                break;
+            case "TemperaturSensor":
+                this.TempSensorservice = new Service.TemperatureSensor(this.name);
+                this.TempSensorservice
+                    .getCharacteristic(Characteristic.CurrentTemperature)
+                    .on('get', this.getTemperature.bind(this));
+                return [this.TempSensorservice];
                 break;
         }
     }
