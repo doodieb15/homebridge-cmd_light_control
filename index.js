@@ -31,8 +31,8 @@ function CmdAccessory(log, config) {
 CmdAccessory.prototype = {
 
     cmdRequest: function (cmd, callback) {
-        
-	exec(cmd, function (error, stdout, stderr) {
+
+        exec(cmd, function (error, stdout, stderr) {
             callback(error, stdout, stderr)
         })
     },
@@ -68,7 +68,7 @@ CmdAccessory.prototype = {
 
         this.log("Getting power state");
 
-	cmd = this.getStatus_cmd;	
+        cmd = this.getStatus_cmd;
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
@@ -100,7 +100,7 @@ CmdAccessory.prototype = {
                 this.log('CMD get brightness function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log('Brightness level is currently %s',  parseFloat(response));
+                this.log('Brightness level is currently %s', parseFloat(response));
                 callback(null, parseFloat(response));
             }
 
@@ -127,23 +127,51 @@ CmdAccessory.prototype = {
                 callback(null, parseFloat(response));
             }
 
-        }.bind(this));},
+        }.bind(this));
+    },
 
     setBrightness: function (level, callback) {
 
+        if (level < 20) {
+            level = 0;
+        }
         var cmd = this.brightness_cmd.replace("%b", level)
+        if (!this.getStatus_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
 
         this.log("Setting brightness to %s", level);
 
         this.cmdRequest(cmd, function (error, stdout, stderr) {
             if (error) {
-                this.log('CMD brightness function failed: %s', error);
+                this.log('CMD set brightness function failed: %s', error);
                 callback(error);
+                return;
             } else {
-                this.log('CMD brightness function succeeded!');
-                callback();
-                this.log
+                this.log('CMD Set brightness function succeeded!');
+                //callback();  
             }
+        }.bind(this));
+
+
+
+        this.log("Getting brightness level");
+
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get brightness function failed: %s', error.message);
+                callback(error);
+		return;
+            } else {
+                this.log('Brightness level is currently %s', parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
         }.bind(this));
     },
 
