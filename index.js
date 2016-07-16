@@ -31,7 +31,8 @@ function CmdAccessory(log, config) {
 CmdAccessory.prototype = {
 
     cmdRequest: function (cmd, callback) {
-        exec(cmd, function (error, stdout, stderr) {
+        
+	exec(cmd, function (error, stdout, stderr) {
             callback(error, stdout, stderr)
         })
     },
@@ -59,27 +60,24 @@ CmdAccessory.prototype = {
         }.bind(this));
     },
     getPowerState: function (callback) {
-        var cmd;
-
         if (!this.getStatus_cmd) {
             this.log.warn("Ignoring request; No status cmd defined.");
-            callback(new Error("No status cmdl defined."));
+            callback(new Error("No status cmd defined."));
             return;
         }
 
         this.log("Getting power state");
 
-
-        cmd = this.getStatus_cmd;
+	cmd = this.getStatus_cmd;	
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
                 this.log('CMD get power function failed: %s', error.message);
                 callback(error);
             } else {
-                var binaryState = response;
+                var binaryState = parseFloat(response);
                 var powerOn = binaryState > 0;
-                this.log("Power state is currently %s", binaryState);
+                this.log("Power state is currently %s", powerOn);
                 callback(null, powerOn);
             }
 
@@ -102,9 +100,8 @@ CmdAccessory.prototype = {
                 this.log('CMD get brightness function failed: %s', error.message);
                 callback(error);
             } else {
-                var binaryState = response;
-                this.log("Brightness level is currently %s", binaryState);
-                callback(null, parseFloat(binaryState));
+                this.log('Brightness level is currently %s',  parseFloat(response));
+                callback(null, parseFloat(response));
             }
 
         }.bind(this));
@@ -126,9 +123,8 @@ CmdAccessory.prototype = {
                 this.log('CMD get Temperature function failed: %s', error.message);
                 callback(error);
             } else {
-                var binaryState = response;
-                this.log("Temperature level is currently %s", binaryState);
-                callback(null, parseFloat(binaryState));
+                this.log("Temperature level is currently %s", parseFloat(response));
+                callback(null, parseFloat(response));
             }
 
         }.bind(this));},
