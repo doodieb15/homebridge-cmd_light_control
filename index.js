@@ -211,7 +211,7 @@ CmdAccessory.prototype = {
         this.log("Setting Blinds Position");
 
 
-        cmd = this.setBlindsPosition_cmd;
+        cmd = this.setBlindsPosition_cmd.replace("%b", level);
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
@@ -280,7 +280,7 @@ CmdAccessory.prototype = {
         this.log("Setting Blinds Horziontal Angle State");
 
 
-        cmd = this.setBlindsHorziontalState_cmd;
+        cmd = this.setBlindsHorziontalState_cmd.replace("%b", level);
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
