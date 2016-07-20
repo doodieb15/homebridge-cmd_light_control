@@ -257,7 +257,7 @@ CmdAccessory.prototype = {
         this.log("Getting Blinds Horziontal Angle State");
 
 
-        cmd = this.getBlindsHorziontalTiltAngle_cmd;
+        cmd = this.getBlindsHorizontalTiltAngle_cmd;
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
