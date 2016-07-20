@@ -35,10 +35,10 @@
      	    "service": "Light",
 	    "brightnessHandling": "yes",
             "name": "Kuechenlicht",
-            "on_cmd": "/home/pi/setlight.sh 20 100",
-            "off_cmd": "/home/pi/setlight.sh 20 0",
-	    "brightness_cmd": "/home/pi/setlight.sh 20 %b",
-	    "get_status_cmd": "/home/pi/getlight.sh 20"	
+            "on_cmd": "/home/pi/setlight.sh 21 100",
+            "off_cmd": "/home/pi/setlight.sh 21 0",
+	    "brightness_cmd": "/home/pi/setlight.sh 21 %b",
+	    "get_status_cmd": "/home/pi/getlight.sh 21"	
         }, 
         {
            
@@ -85,6 +85,17 @@
      	    "service": "TemperaturSensor",
 	    "name": "Kaminzimmer",
 	    "get_temperature_cmd": "/home/pi/gettemperature.sh 9"
+	},
+	{
+ 	    "accessory": "CMD",	   
+     	    "service": "Blinds",
+	    "name": "WohnzimmerJal",
+	    "getBlindsPosition_cmd": "/home/pi/getblindsposition.sh 4",
+	    "setBlindsPosition_cmd": "/home/pi/setblindsposition.sh 4",
+	    "getBlindsState_cmd": "/home/pi/setblindsposition.sh 4",
+	    "setBlindsHorizontalTiltAngle_cmd": "/home/pi/setblindshorizontaltiltangle.sh 4",
+	    "getBlindsHorizontalTiltAngle_cmd": "/home/pi/getblindshorizontaltiltangle.sh 4"
+
 	},
 	{
  	    "accessory": "CMD",	   

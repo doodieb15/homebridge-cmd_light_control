@@ -20,7 +20,11 @@ function CmdAccessory(log, config) {
     this.service = config["service"] || "Switch";
     this.brightnessHandling = config["brightnessHandling"] || "no";
     this.getTemperature_cmd = config["get_temperature_cmd"];
-
+    this.getBlindsPosition_cmd = config["getBlindsPosition_cmd"];
+    this.setBlindsPosition_cmd = config["setBlindsPosition_cmd"];
+    this.getBlindsState_cmd = config["getBlindsState_cmd"];
+    this.setBlindsHorizontalTiltAngle_cmd = config["setBlindsHorizontalTiltAngle_cmd"];
+    this.getBlindsHorizontalTiltAngle_cmd = config["getBlindsHorizontalTiltAngle_cmd"];
 }
 
 
@@ -174,7 +178,121 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+    getBlindsCurrentPosition: function (callback) {
+        if (!this.getBlindsPosition_cmd) {
+            this.log.warn("Ignoring request; No Get Blinds cmd defined.");
+            callback(new Error("No get Blinds cmd defined."));
+            return;
+        }
 
+        this.log("Getting Blinds Position");
+
+
+        cmd = this.getBlindsPosition_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get BlindsPosition function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("BlindsPosition is currently %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+    setBlindsCurrentPosition: function (callback) {
+        if (!this.setBlindsPosition_cmd) {
+            this.log.warn("Ignoring request; No Set Blinds cmd defined.");
+            callback(new Error("No Set Blinds cmd defined."));
+            return;
+        }
+
+        this.log("Setting Blinds Position");
+
+
+        cmd = this.setBlindsPosition_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD set BlindsPosition function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("BlindsPosition is set to %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+    getPositionState: function (callback) {
+        if (!this.getBlindsState_cmd) {
+            this.log.warn("Ignoring request; No Set BlindsState cmd defined.");
+            callback(new Error("No Set BlindsState cmd defined."));
+            return;
+        }
+
+        this.log("Getting Blinds State");
+
+
+        cmd = this.getBlindsState_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD set BlindsState function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("BlindsState is %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+    getBlindsHorizontalTiltAngle: function (callback) {
+        if (!this.getBlindsHorizontalTiltAngle_cmd) {
+            this.log.warn("Ignoring request; No Get BlindsHorizontalTiltAngle cmd defined.");
+            callback(new Error("No Get BlindsHorizonalTiltAngle cmd defined."));
+            return;
+        }
+
+        this.log("Getting Blinds Horziontal Angle State");
+
+
+        cmd = this.getBlindsHorziontalState_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get BlindsHorizontalAngle function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("BlindsHorizontalAngele is %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+    setBlindsHorizontalTiltAngle: function (callback) {
+        if (!this.setBlindsHorizontalTiltAngle_cmd) {
+            this.log.warn("Ignoring request; No Set BlindsHorizontalTiltAngle cmd defined.");
+            callback(new Error("No Set BlindsHorizonalTiltAngle cmd defined."));
+            return;
+        }
+
+        this.log("Setting Blinds Horziontal Angle State");
+
+
+        cmd = this.setBlindsHorziontalState_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD set BlindsHorizontalAngle function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("BlindsHorizontalAngele is %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    }, 
 
 
     identify: function (callback) {
@@ -234,6 +352,28 @@ CmdAccessory.prototype = {
                     .on('get', this.getTemperature.bind(this));
                 return [this.TempSensorservice];
                 break;
+	    case "Blinds":
+		this.Blindservice = new Service.WindowCovering(this.name);
+		this.Blindservice
+		    .getCharacteristic(Characteristic.CurrentPosition)
+		    .on('get' , this.getBlindsCurrentPosition.bind(this));
+		this.Blindservice
+		    .getCharacteristic(Characteristic.TargetPosition)
+		    .on('get' , this.setBlindsCurrentPosition.bind(this));
+		this.Blindservice
+		    .getCharacteristic(Characteristic.PositionState)
+		    .on('get' , this.getPositionState.bind(this));
+		this.Blindservice
+                        .addCharacteristic(new Characteristic.TargetHorizontalTiltAngle())
+                        .on('set', this.setBlindsHorizontalTiltAngle.bind(this));
+		this.Blindservice
+                        .addCharacteristic(new Characteristic.CurrentHorizontalTiltAngle())
+                        .on('get', this.getBlindsHorizontalTiltAngle.bind(this));
+
+		
+		return [informationService, this.Blindservice];
+		break;
+
         }
     }
 };
