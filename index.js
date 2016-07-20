@@ -201,7 +201,13 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+
     setBlindsCurrentPosition: function (level, callback) {
+
+
+
+        var cmd = this.setBlindsPosition_cmd.replace("%b", level)
+
         if (!this.setBlindsPosition_cmd) {
             this.log.warn("Ignoring request; No Set Blinds cmd defined.");
             callback(new Error("No Set Blinds cmd defined."));
@@ -209,10 +215,6 @@ CmdAccessory.prototype = {
         }
 
         this.log("Setting Blinds Position");
-
-
-        cmd = this.setBlindsPosition_cmd.replace("%b", level);
-
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
                 this.log('CMD set BlindsPosition function failed: %s', error.message);
@@ -271,6 +273,11 @@ CmdAccessory.prototype = {
         }.bind(this));
     },
     setBlindsHorizontalTiltAngle: function (level, callback) {
+
+
+
+        var cmd = this.setBlindsHorziontalState_cmd.replace("%b", level)
+
         if (!this.setBlindsHorizontalTiltAngle_cmd) {
             this.log.warn("Ignoring request; No Set BlindsHorizontalTiltAngle cmd defined.");
             callback(new Error("No Set BlindsHorizonalTiltAngle cmd defined."));
@@ -278,9 +285,6 @@ CmdAccessory.prototype = {
         }
 
         this.log("Setting Blinds Horziontal Angle State");
-
-
-        cmd = this.setBlindsHorziontalState_cmd.replace("%b", level);
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
