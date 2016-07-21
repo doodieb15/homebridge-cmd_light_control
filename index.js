@@ -220,7 +220,7 @@ CmdAccessory.prototype = {
                 this.log('CMD set BlindsPosition function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log("BlindsPosition is set");
+                this.log("BlindsPositioncmd function succeeded!");
               //  callback();
             }
 
@@ -266,7 +266,7 @@ CmdAccessory.prototype = {
                 this.log('CMD get BlindsHorizontalAngle function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log("BlindsHorizontalAngele is %s", parseFloat(response));
+                this.log("BlindsHorizontalAngel is %s", parseFloat(response));
                 callback(null, parseFloat(response));
             }
 
@@ -276,7 +276,7 @@ CmdAccessory.prototype = {
 
 
 
-        var cmd = this.setBlindsHorziontalState_cmd.replace("%b", level)
+        var cmd = this.setBlindsHorizontalTiltAngle_cmd.replace("%b", level)
 
         if (!this.setBlindsHorizontalTiltAngle_cmd) {
             this.log.warn("Ignoring request; No Set BlindsHorizontalTiltAngle cmd defined.");
@@ -291,7 +291,7 @@ CmdAccessory.prototype = {
                 this.log('CMD set BlindsHorizontalAngle function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log("BlindsHorizontalAngele is set");
+                this.log("BlindsHorizontalAngelcmd function succeeded");
               //  callback();
             }
 
@@ -360,19 +360,40 @@ CmdAccessory.prototype = {
 		this.Blindservice = new Service.WindowCovering(this.name);
 		this.Blindservice
 		    .getCharacteristic(Characteristic.CurrentPosition)
+			.setProps( {
+				 unit: Characteristic.Units.PERCENTAGE,
+   				 maxValue: 100,
+    				 minValue: 0,
+    				 minStep: 20})
 		    .on('get' , this.getBlindsCurrentPosition.bind(this));
 		this.Blindservice
 		    .getCharacteristic(Characteristic.TargetPosition)
-		    .on('get' , this.setBlindsCurrentPosition.bind(this));
+			.setProps( {
+				 unit: Characteristic.Units.PERCENTAGE,
+   				 maxValue: 100,
+    				 minValue: 0,
+    				 minStep: 20})
+		    .on('set' , this.setBlindsCurrentPosition.bind(this));
 		this.Blindservice
 		    .getCharacteristic(Characteristic.PositionState)
 		    .on('get' , this.getPositionState.bind(this));
 		this.Blindservice
                         .addCharacteristic(new Characteristic.TargetHorizontalTiltAngle())
+			.setProps( {
+				 unit: Characteristic.Units.PERCENTAGE,
+   				 maxValue: 100,
+    				 minValue: 0,
+    				 minStep: 20})
                         .on('set', this.setBlindsHorizontalTiltAngle.bind(this));
 		this.Blindservice
                         .addCharacteristic(new Characteristic.CurrentHorizontalTiltAngle())
+			.setProps( {
+				 unit: Characteristic.Units.PERCENTAGE,
+   				 maxValue: 100,
+    				 minValue: 0,
+    				 minStep: 20})
                         .on('get', this.getBlindsHorizontalTiltAngle.bind(this));
+
 
 		
 		return [informationService, this.Blindservice];
