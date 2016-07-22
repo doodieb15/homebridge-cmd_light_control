@@ -221,7 +221,7 @@ CmdAccessory.prototype = {
                 callback(error);
             } else {
                 this.log("BlindsPositioncmd function succeeded!");
-              //  callback();
+              	callback();
             }
 
         }.bind(this));
@@ -292,7 +292,7 @@ CmdAccessory.prototype = {
                 callback(error);
             } else {
                 this.log("BlindsHorizontalAngelcmd function succeeded");
-              //  callback();
+                callback();
             }
 
         }.bind(this));
