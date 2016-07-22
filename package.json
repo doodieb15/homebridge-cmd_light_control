@@ -1,6 +1,6 @@
 {
   "name": "homebridge-cmd_light_control",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Homebridge Plug in to control my lights from cmd files",
   "main": "index.js",
   "scripts": {
