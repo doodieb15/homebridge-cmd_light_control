@@ -1,9 +1,12 @@
+var inherits = require('util').inherits;
 var Service, Characteristic;
 var exec = require("child_process").exec;
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
+    makeVolumeCharacteristic();
+    makeChannelCharacteristic();
     homebridge.registerAccessory("homebridge-cmd", "CMD", CmdAccessory);
 }
 
@@ -25,7 +28,12 @@ function CmdAccessory(log, config) {
     this.getBlindsState_cmd = config["getBlindsState_cmd"];
     this.setBlindsHorizontalTiltAngle_cmd = config["setBlindsHorizontalTiltAngle_cmd"];
     this.getBlindsHorizontalTiltAngle_cmd = config["getBlindsHorizontalTiltAngle_cmd"];
-}
+    this.setAVOn_cmd = config["setAVon_cmd"];
+    this.getAVOn_cmd = config["getAVon_cmd"];    
+    this.getAVVolume_cmd = config["setAVVolume_cmd"];
+    this.setAVVolume_cmd = config["getAVVolume_cmd"];
+    this.getAVChannel_cmd = config["setAVChannel_cmd"];    
+    this.setAVChannel_cmd = config["getAVChannel_cmd"];}
 
 
 
@@ -63,6 +71,7 @@ CmdAccessory.prototype = {
             }
         }.bind(this));
     },
+
     getPowerState: function (callback) {
         if (!this.getStatus_cmd) {
             this.log.warn("Ignoring request; No status cmd defined.");
@@ -106,6 +115,148 @@ CmdAccessory.prototype = {
             } else {
                 this.log('Brightness level is currently %s', parseFloat(response));
                 callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+
+    setAVOn: function (powerOn, callback) {
+        var cmd;
+
+        if (powerOn) {
+            cmd = this.on_cmd;
+            this.log("Setting power state to on");
+        } else {
+            cmd = this.off_cmd;
+            this.log("Setting power state to off");
+        }
+
+        this.cmdRequest(cmd, function (error, stdout, stderr) {
+            if (error) {
+                this.log('power function failed: %s', stderr);
+                callback(error);
+            } else {
+                this.log('power function succeeded!');
+                callback();
+                this.log(stdout);
+            }
+        }.bind(this));
+    },
+
+    getAVOn: function (callback) {
+        if (!this.getAVOn_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
+
+        this.log("Getting power state");
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get power function failed: %s', error.message);
+                callback(error);
+            } else {
+                var binaryState = parseFloat(response);
+                var powerOn = binaryState > 0;
+                this.log("Power state is currently %s", powerOn);
+                callback(null, powerOn);
+            }
+
+        }.bind(this));
+    },
+
+
+    setAVVolume: function (powerOn, callback) {
+        var cmd;
+
+        if (powerOn) {
+            cmd = this.on_cmd;
+            this.log("Setting Volume to on");
+        } else {
+            cmd = this.off_cmd;
+            this.log("Setting Volume to off");
+        }
+
+        this.cmdRequest(cmd, function (error, stdout, stderr) {
+            if (error) {
+                this.log('Volume function failed: %s', stderr);
+                callback(error);
+            } else {
+                this.log('Volume function succeeded!');
+                callback();
+                this.log(stdout);
+            }
+        }.bind(this));
+    },
+    getAVVolume: function (callback) {
+        if (!this.getAVVolume_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
+
+        this.log("Getting Volume state");
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get Volume function failed: %s', error.message);
+                callback(error);
+            } else {
+                var binaryState = parseFloat(response);
+                var powerOn = binaryState > 0;
+                this.log("Power state is currently %s", powerOn);
+                callback(null, powerOn);
+            }
+
+        }.bind(this));
+    },
+    setAVChannel: function (powerOn, callback) {
+        var cmd;
+
+        if (powerOn) {
+            cmd = this.on_cmd;
+            this.log("Setting Channel state to on");
+        } else {
+            cmd = this.off_cmd;
+            this.log("Setting Channel state to off");
+        }
+
+        this.cmdRequest(cmd, function (error, stdout, stderr) {
+            if (error) {
+                this.log('power function failed: %s', stderr);
+                callback(error);
+            } else {
+                this.log('Channel function succeeded!');
+                callback();
+                this.log(stdout);
+            }
+        }.bind(this));
+    },
+    getAVChannel: function (callback) {
+        if (!this.getAVChannel_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
+
+        this.log("Getting Channel state");
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get Channel function failed: %s', error.message);
+                callback(error);
+            } else {
+                var binaryState = parseFloat(response);
+                var powerOn = binaryState > 0;
+                this.log("Power state is currently %s", powerOn);
+                callback(null, powerOn);
             }
 
         }.bind(this));
@@ -226,6 +377,7 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+
     getPositionState: function (callback) {
         if (!this.getBlindsState_cmd) {
             this.log.warn("Ignoring request; No Set BlindsState cmd defined.");
@@ -249,6 +401,7 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+
     getBlindsHorizontalTiltAngle: function (callback) {
         if (!this.getBlindsHorizontalTiltAngle_cmd) {
             this.log.warn("Ignoring request; No Get BlindsHorizontalTiltAngle cmd defined.");
@@ -272,6 +425,7 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+
     setBlindsHorizontalTiltAngle: function (level, callback) {
 
 
@@ -356,6 +510,24 @@ CmdAccessory.prototype = {
                     .on('get', this.getTemperature.bind(this));
                 return [this.TempSensorservice];
                 break;
+	    case "AV":
+                this.AVservice = new Service.Switch(this.name);
+  		this.AVservice
+  			.getCharacteristic(Characteristic.On)
+    				.on("set", this.setAVOn.bind(this))
+    				.on("get", this.getAVOn.bind(this));
+
+ 		 this.AVservice
+   			 .addCharacteristic(VolumeCharacteristic)
+    			 	.on('get', this.getAVVolume.bind(this))
+   			        .on('set', this.setAVVolume.bind(this));
+	
+ 		 this.AVservice
+    			.addCharacteristic(ChannelCharacteristic)
+    				.on('get', this.getAVChannel.bind(this))
+    				.on('set', this.setAVChannel.bind(this));
+		 return [this.AVservice];
+		 break;
 	    case "Blinds":
 		this.Blindservice = new Service.WindowCovering(this.name);
 		this.Blindservice
@@ -402,3 +574,39 @@ CmdAccessory.prototype = {
         }
     }
 };
+
+function makeVolumeCharacteristic() {
+
+  VolumeCharacteristic = function() {
+    Characteristic.call(this, 'Volume', '91288267-5678-49B2-8D22-F57BE995AA93');
+    this.setProps({
+      format: Characteristic.Formats.INT,
+      unit: Characteristic.Units.PERCENTAGE,
+      maxValue: 100,
+      minValue: 0,
+      minStep: 1,
+      perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+    });
+    this.value = this.getDefaultValue();
+  };
+
+  inherits(VolumeCharacteristic, Characteristic);
+}
+
+function makeChannelCharacteristic() {
+
+  ChannelCharacteristic = function () {
+    Characteristic.call(this, 'Channel', '212131F4-2E14-4FF4-AE13-C97C3232499D');
+    this.setProps({
+      format: Characteristic.Formats.INT,
+      unit: Characteristic.Units.NONE,
+      maxValue: 100,
+      minValue: 0,
+      minStep: 1,
+      perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+    });
+    this.value = this.getDefaultValue();
+  };
+
+  inherits(ChannelCharacteristic, Characteristic);
+}
