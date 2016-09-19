@@ -30,10 +30,10 @@ function CmdAccessory(log, config) {
     this.getBlindsHorizontalTiltAngle_cmd = config["getBlindsHorizontalTiltAngle_cmd"];
     this.setAVOn_cmd = config["setAVon_cmd"];
     this.getAVOn_cmd = config["getAVon_cmd"];    
-    this.getAVVolume_cmd = config["setAVVolume_cmd"];
-    this.setAVVolume_cmd = config["getAVVolume_cmd"];
-    this.getAVChannel_cmd = config["setAVChannel_cmd"];    
-    this.setAVChannel_cmd = config["getAVChannel_cmd"];}
+    this.setAVVolume_cmd = config["setAVVolume_cmd"];
+    this.getAVVolume_cmd = config["getAVVolume_cmd"];
+    this.setAVChannel_cmd = config["setAVChannel_cmd"];    
+    this.getAVChannel_cmd = config["getAVChannel_cmd"];}
 
 
 
@@ -151,8 +151,9 @@ CmdAccessory.prototype = {
         }
 
         this.log("Getting power state");
+	
 
-        cmd = this.getStatus_cmd;
+        cmd = this.getAVOn_cmd;
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
@@ -200,16 +201,15 @@ CmdAccessory.prototype = {
 
         this.log("Getting Volume state");
 
-        cmd = this.getStatus_cmd;
+        cmd = this.getAVVolume_cmd;
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
                 this.log('CMD get Volume function failed: %s', error.message);
                 callback(error);
             } else {
-                var binaryState = parseFloat(response);
-                var powerOn = binaryState > 0;
-                this.log("Power state is currently %s", powerOn);
+                var powerOn = parseFloat(response);
+                this.log("AVVolume is currently %s", powerOn);
                 callback(null, powerOn);
             }
 
@@ -246,16 +246,15 @@ CmdAccessory.prototype = {
 
         this.log("Getting Channel state");
 
-        cmd = this.getStatus_cmd;
+        cmd = this.getAVChannel_cmd;
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
                 this.log('CMD get Channel function failed: %s', error.message);
                 callback(error);
             } else {
-                var binaryState = parseFloat(response);
-                var powerOn = binaryState > 0;
-                this.log("Power state is currently %s", powerOn);
+                var powerOn = parseFloat(response);
+                this.log("AVChannel is currently %s", powerOn);
                 callback(null, powerOn);
             }
 
