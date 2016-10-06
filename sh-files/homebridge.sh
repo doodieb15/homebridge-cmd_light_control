@@ -1,0 +1,1 @@
+homebridge -D -U ~/.homebridge
