@@ -123,13 +123,8 @@ CmdAccessory.prototype = {
     setAVOn: function (powerOn, callback) {
         var cmd;
 
-        if (powerOn) {
-            cmd = this.on_cmd;
-            this.log("Setting power state to on");
-        } else {
-            cmd = this.off_cmd;
-            this.log("Setting power state to off");
-        }
+
+	var cmd = this.setAVOn_cmd.replace("%b", powerOn)	
 
         this.cmdRequest(cmd, function (error, stdout, stderr) {
             if (error) {
@@ -173,13 +168,7 @@ CmdAccessory.prototype = {
     setAVVolume: function (powerOn, callback) {
         var cmd;
 
-        if (powerOn) {
-            cmd = this.on_cmd;
-            this.log("Setting Volume to on");
-        } else {
-            cmd = this.off_cmd;
-            this.log("Setting Volume to off");
-        }
+	var cmd = this.setAVVolume_cmd.replace("%b", powerOn)
 
         this.cmdRequest(cmd, function (error, stdout, stderr) {
             if (error) {
@@ -218,13 +207,7 @@ CmdAccessory.prototype = {
     setAVChannel: function (powerOn, callback) {
         var cmd;
 
-        if (powerOn) {
-            cmd = this.on_cmd;
-            this.log("Setting Channel state to on");
-        } else {
-            cmd = this.off_cmd;
-            this.log("Setting Channel state to off");
-        }
+	var cmd = this.setAVChannel_cmd.replace("%b", powerOn)
 
         this.cmdRequest(cmd, function (error, stdout, stderr) {
             if (error) {
