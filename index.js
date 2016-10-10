@@ -328,8 +328,8 @@ CmdAccessory.prototype = {
                 this.log('CMD get BlindsPosition function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log("BlindsPosition is currently %s", parseFloat(response));
-                callback(null, parseFloat(response));
+                this.log("BlindsPosition is currently %s", parseInt(response));
+                callback(null, parseInt(response));
             }
 
         }.bind(this));
@@ -377,8 +377,8 @@ CmdAccessory.prototype = {
                 this.log('CMD set BlindsState function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log("BlindsState is %s", parseFloat(response));
-                callback(null, parseFloat(response));
+                this.log("BlindsState is %s", parseInt(response));
+                callback(null, parseInt(response));
             }
 
         }.bind(this));
@@ -401,8 +401,8 @@ CmdAccessory.prototype = {
                 this.log('CMD get BlindsHorizontalAngle function failed: %s', error.message);
                 callback(error);
             } else {
-                this.log("BlindsHorizontalAngel is %s", parseFloat(response));
-                callback(null, parseFloat(response));
+                this.log("BlindsHorizontalAngel is %s", parseInt(response));
+                callback(null, parseInt(response));
             }
 
         }.bind(this));
@@ -530,14 +530,18 @@ CmdAccessory.prototype = {
 		    .on('set' , this.setBlindsCurrentPosition.bind(this));
 		this.Blindservice
 		    .getCharacteristic(Characteristic.PositionState)
+			.setProps( {
+   				 maxValue: 2,
+    				 minValue: 0,
+    				 minStep: 1})
 		    .on('get' , this.getPositionState.bind(this));
 		this.Blindservice
                         .addCharacteristic(new Characteristic.TargetHorizontalTiltAngle())
-			.setProps( {
-				 unit: Characteristic.Units.PERCENTAGE,
-   				 maxValue: 100,
-    				 minValue: 0,
-    				 minStep: 20})
+	//		.setProps( {
+	//			 unit: Characteristic.Units.PERCENTAGE,
+   	//			 maxValue: 100,
+    	//			 minValue: 0,
+    	//			 minStep: 25})
                         .on('set', this.setBlindsHorizontalTiltAngle.bind(this));
 		this.Blindservice
                         .addCharacteristic(new Characteristic.CurrentHorizontalTiltAngle())
@@ -545,7 +549,7 @@ CmdAccessory.prototype = {
 				 unit: Characteristic.Units.PERCENTAGE,
    				 maxValue: 100,
     				 minValue: 0,
-    				 minStep: 20})
+    				 minStep: 25})
                         .on('get', this.getBlindsHorizontalTiltAngle.bind(this));
 
 

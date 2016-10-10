@@ -12,6 +12,15 @@ server_port=80
 #echo $server_ip : $server_port
 
 
+myurl="http://$server_ip:$server_port/goform/ReadWrite?redirect=lights%2Fbrightness.asp&variable=Remote:devices%5B$light_id%5D.Power&value="$light_value"&read=Read"
+resp=$(curl  -s "$myurl" | grep -oh "\w*val=\w*"  | head -1l | cut -c5-)
+if [ $? -gt 0 ]; then
+echo curl error
+else
+
+Power=$resp
+fi
+
 myurl="http://$server_ip:$server_port/goform/ReadWrite?redirect=lights%2Fbrightness.asp&variable=Remote:devices%5B$light_id%5D.Volume&value="$light_value"&read=Read"
 resp=$(curl  -s "$myurl" | grep -oh "\w*val=\w*"  | head -1l | cut -c5-)
 if [ $? -gt 0 ]; then
@@ -35,7 +44,7 @@ else
 Input=$resp
 fi
 
-myurl="http://$server_ip:$server_port/goform/ReadWrite?redirect=lights%2Fbrightness.asp&variable=Remote:activities%5B0%5D.Device%5B$light_id%5D.Power&value=$light_value&variable1=Remote:activities%5B0%5D.Device%5B$light_id%5D.Part_of_activity&value1=1&variable2=Remote:activities%5B0%5D.Device%5B$light_id%5D.Volume&value2=$Volume&variable3=Remote:activities%5B0%5D.Device%5B$light_id%5D.Channel&value3=$Channel&variable4=Remote:activities%5B0%5D.Device%5B$light_id%5D.Input&value4=$Input&variable5=Remote:remote_activity&value5=1&write=Write"
+myurl="http://$server_ip:$server_port/goform/ReadWrite?redirect=lights%2Fbrightness.asp&variable=Remote:activities%5B0%5D.Device%5B$light_id%5D.Power&value=$Power&variable1=Remote:activities%5B0%5D.Device%5B$light_id%5D.Part_of_activity&value1=1&variable2=Remote:activities%5B0%5D.Device%5B$light_id%5D.Volume&value2=$Volume&variable3=Remote:activities%5B0%5D.Device%5B$light_id%5D.Channel&value3=$Channel&variable4=Remote:activities%5B0%5D.Device%5B$light_id%5D.Input&value4=$Input&variable5=Remote:remote_activity&value5=1&write=Write"
           curl -s "$myurl"
           if [ $? -gt 0 ]; then
             echo curl error
