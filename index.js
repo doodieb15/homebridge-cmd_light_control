@@ -23,6 +23,8 @@ function CmdAccessory(log, config) {
     this.service = config["service"] || "Switch";
     this.brightnessHandling = config["brightnessHandling"] || "no";
     this.getTemperature_cmd = config["get_temperature_cmd"];
+    this.getCO2_cmd = config["getCO2_cmd"];
+    this.getHumidity_cmd = config["getHumidity_cmd"];
     this.getBlindsPosition_cmd = config["getBlindsPosition_cmd"];
     this.setBlindsPosition_cmd = config["setBlindsPosition_cmd"];
     this.getBlindsState_cmd = config["getBlindsState_cmd"];
@@ -261,6 +263,56 @@ CmdAccessory.prototype = {
                 callback(error);
             } else {
                 this.log("Temperature level is currently %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+
+
+
+    getCarbonDioxideLevel: function (callback) {
+        if (!this.getCO2_cmd) {
+            this.log.warn("Ignoring request; No Get CO2 cmd defined.");
+            callback(new Error("No get CO2 cmd defined."));
+            return;
+        }
+
+        this.log("Getting CO2 level");
+
+
+        cmd = this.getCO2_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get CO2 function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("CO2 level is currently %s", parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+
+    getHumidityLevel: function (callback) {
+        if (!this.getHumidity_cmd) {
+            this.log.warn("Ignoring request; No Get Humidiy cmd defined.");
+            callback(new Error("No get Humidity cmd defined."));
+            return;
+        }
+
+        this.log("Getting Humidity level");
+
+
+        cmd = this.getHumidity_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get Humidity function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log("Humidity level is currently %s", parseFloat(response));
                 callback(null, parseFloat(response));
             }
 
@@ -510,6 +562,20 @@ CmdAccessory.prototype = {
     				.on('set', this.setAVChannel.bind(this));
 		 return [this.AVservice];
 		 break;
+	    case "CarbonDioxide":
+		this.CarbonDioxideservice = new Service.CarbonDioxideSensor(this.name);
+		this.CarbonDioxideservice
+                    .getCharacteristic(Characteristic.CarbonDioxideLevel)
+                    .on('get', this.getCarbonDioxideLevel.bind(this));
+                return [this.CarbonDioxideservice];
+                break;
+	    case "Humidity":
+		this.Humidityservice = new Service.HumiditySensor(this.name);
+		this.Humidityservice
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                    .on('get', this.getHumidityLevel.bind(this));
+                return [this.Humidityservice];
+                break;
 	    case "Blinds":
 		this.Blindservice = new Service.WindowCovering(this.name);
 		this.Blindservice
