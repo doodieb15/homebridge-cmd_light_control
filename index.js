@@ -541,6 +541,9 @@ CmdAccessory.prototype = {
                 this.TempSensorservice = new Service.TemperatureSensor(this.name);
                 this.TempSensorservice
                     .getCharacteristic(Characteristic.CurrentTemperature)
+			.setProps( {
+   				 maxValue: 60,
+    				 minValue: -30})
                     .on('get', this.getTemperature.bind(this));
                 return [this.TempSensorservice];
                 break;
