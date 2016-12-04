@@ -399,7 +399,7 @@ CmdAccessory.prototype = {
             return;
         }
 
-        this.log("Setting Blinds Position");
+        this.log("Setting Blinds Position to ",level);
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
                 this.log('CMD set BlindsPosition function failed: %s', error.message);
@@ -472,7 +472,7 @@ CmdAccessory.prototype = {
             return;
         }
 
-        this.log("Setting Blinds Horziontal Angle State");
+        this.log("Setting Blinds Horziontal Angle to ",level);
 
         this.cmdRequest(cmd, function (error, response, stderr) {
             if (error) {
@@ -605,18 +605,18 @@ CmdAccessory.prototype = {
     				 minStep: 1})
 		    .on('get' , this.getPositionState.bind(this));
 		this.Blindservice
-                        .getCharacteristic(new Characteristic.TargetHorizontalTiltAngle())
+                        .getCharacteristic(Characteristic.TargetHorizontalTiltAngle)
 			.setProps( {
    				 maxValue: 100,
     				 minValue: 0,
-    				 minStep: 25})
+    				 minStep: 20})
                         .on('set', this.setBlindsHorizontalTiltAngle.bind(this));
 		this.Blindservice
-                        .getCharacteristic(new Characteristic.CurrentHorizontalTiltAngle())
+                        .getCharacteristic(Characteristic.CurrentHorizontalTiltAngle)
 			.setProps( {
    				 maxValue: 100,
     				 minValue: 0,
-    				 minStep: 25})
+    				 minStep: 20})
                         .on('get', this.getBlindsHorizontalTiltAngle.bind(this));
 
 
