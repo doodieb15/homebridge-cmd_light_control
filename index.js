@@ -606,11 +606,11 @@ CmdAccessory.prototype = {
 		    .on('get' , this.getPositionState.bind(this));
 		this.Blindservice
                         .addCharacteristic(new Characteristic.TargetHorizontalTiltAngle())
-	//		.setProps( {
-	//			 unit: Characteristic.Units.PERCENTAGE,
-   	//			 maxValue: 100,
-    	//			 minValue: 0,
-    	//			 minStep: 25})
+			.setProps( {
+				 unit: Characteristic.Units.PERCENTAGE,
+   				 maxValue: 100,
+    				 minValue: 0,
+    				 minStep: 25})
                         .on('set', this.setBlindsHorizontalTiltAngle.bind(this));
 		this.Blindservice
                         .addCharacteristic(new Characteristic.CurrentHorizontalTiltAngle())
