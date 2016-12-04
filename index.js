@@ -607,7 +607,6 @@ CmdAccessory.prototype = {
 		this.Blindservice
                         .addCharacteristic(new Characteristic.TargetHorizontalTiltAngle())
 			.setProps( {
-				 unit: Characteristic.Units.PERCENTAGE,
    				 maxValue: 100,
     				 minValue: 0,
     				 minStep: 25})
@@ -615,7 +614,6 @@ CmdAccessory.prototype = {
 		this.Blindservice
                         .addCharacteristic(new Characteristic.CurrentHorizontalTiltAngle())
 			.setProps( {
-				 unit: Characteristic.Units.PERCENTAGE,
    				 maxValue: 100,
     				 minValue: 0,
     				 minStep: 25})
