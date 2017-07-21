@@ -19,9 +19,13 @@ function CmdAccessory(log, config) {
     this.off_cmd = config["off_cmd"];
     this.getStatus_cmd = config["get_status_cmd"]
     this.brightness_cmd = config["brightness_cmd"];
+	this.speed_cmd = config["speed_cmd"];
     this.name = config["name"];
     this.service = config["service"] || "Switch";
     this.brightnessHandling = config["brightnessHandling"] || "no";
+	this.speedHandling = config["speedHandling"] || "no";
+	this.maxspeedlevel = config["maxspeedlevel"] || 100;
+	this.speedstep = config["speedstep"] || 10;
     this.getTemperature_cmd = config["get_temperature_cmd"];
     this.getCO2_cmd = config["getCO2_cmd"];
     this.getHumidity_cmd = config["getHumidity_cmd"];
@@ -35,7 +39,13 @@ function CmdAccessory(log, config) {
     this.setAVVolume_cmd = config["setAVVolume_cmd"];
     this.getAVVolume_cmd = config["getAVVolume_cmd"];
     this.setAVChannel_cmd = config["setAVChannel_cmd"];    
-    this.getAVChannel_cmd = config["getAVChannel_cmd"];}
+    this.getAVChannel_cmd = config["getAVChannel_cmd"];
+	this.Manufacturer = config["Manufacturer"];
+	this.Model = config["Model"];
+	this.SerialNumber = config["SerialNumber"];
+	this.polling = config["polling"] || "yes";
+
+	}
 
 
 
@@ -98,6 +108,7 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+
     getBrightness: function (callback) {
         if (!this.getStatus_cmd) {
             this.log.warn("Ignoring request; No status cmd defined.");
@@ -116,6 +127,30 @@ CmdAccessory.prototype = {
                 callback(error);
             } else {
                 this.log('Brightness level is currently %s', parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+
+    getSpeed: function (callback) {
+        if (!this.getStatus_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
+
+        this.log("Getting Rotation Speed");
+
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get speed function failed: %s', error.message);
+                callback(error);
+            } else {
+                this.log('Rotation Speed level currently is %s', parseFloat(response));
                 callback(null, parseFloat(response));
             }
 
@@ -363,6 +398,56 @@ CmdAccessory.prototype = {
 
         }.bind(this));
     },
+	
+	
+	setSpeed: function (level, callback) {
+
+        if (level < 20) {
+			//min level for a generic fan to start
+			level = 0;
+        }
+        var cmd = this.speed_cmd.replace("%b", level)
+        if (!this.getStatus_cmd) {
+            this.log.warn("Ignoring request; No status cmd defined.");
+            callback(new Error("No status cmd defined."));
+            return;
+        }
+
+        this.log("Setting speed to %s", level);
+
+        this.cmdRequest(cmd, function (error, stdout, stderr) {
+            if (error) {
+                this.log('CMD set speed function failed: %s', error);
+                callback(error);
+                return;
+            } else {
+                this.log('CMD Set speed function succeeded!');
+                //callback();  
+            }
+        }.bind(this));
+
+
+
+        this.log("Getting Rotation Speed level");
+
+
+        cmd = this.getStatus_cmd;
+
+        this.cmdRequest(cmd, function (error, response, stderr) {
+            if (error) {
+                this.log('CMD get speed function failed: %s', error.message);
+                callback(error);
+		return;
+            } else {
+                this.log('Rotation Speed level currently is %s', parseFloat(response));
+                callback(null, parseFloat(response));
+            }
+
+        }.bind(this));
+    },
+	
+	
+	
     getBlindsCurrentPosition: function (callback) {
         if (!this.getBlindsPosition_cmd) {
             this.log.warn("Ignoring request; No Get Blinds cmd defined.");
@@ -499,10 +584,11 @@ CmdAccessory.prototype = {
         var informationService = new Service.AccessoryInformation();
 
         informationService
-            .setCharacteristic(Characteristic.Manufacturer, "cmd Manufacturer")
-            .setCharacteristic(Characteristic.Model, "cmd Model")
-            .setCharacteristic(Characteristic.SerialNumber, "cmd Serial Number");
+            .setCharacteristic(Characteristic.Manufacturer, this.Manufacturer)
+            .setCharacteristic(Characteristic.Model, this.Model)
+            .setCharacteristic(Characteristic.SerialNumber, this.SerialNumber);
 
+			
         //		var switchService = new Service.Switch(this.name);
 
         //		switchService
@@ -537,92 +623,128 @@ CmdAccessory.prototype = {
 
                 return [informationService, this.lightbulbService];
                 break;
+				
+			case "Fan":
+                this.fanService = new Service.Fan(this.name);
+                this.fanService
+                    .getCharacteristic(Characteristic.On)
+                    .on('set', this.setPowerState.bind(this))
+                    .on('get', this.getPowerState.bind(this));
+                if (this.speedHandling == "yes") {
+                    this.fanService
+                    .addCharacteristic(new Characteristic.RotationSpeed())
+					.setProps({
+					format: Characteristic.Formats.INT,
+					unit: Characteristic.Units.PERCENTAGE,
+					minValue: 0,
+					maxValue: this.maxspeedlevel, 
+					minStep: this.speedstep,
+					})
+                    .on('set', this.setSpeed.bind(this))
+                    .on('get', this.getSpeed.bind(this));
+                }
+				this.log("maxspeedlevel is %s", this.maxspeedlevel);
+				this.log("speedstep is %s", this.speedstep);
+				
+                return [informationService, this.fanService];
+                break;		
+
+				
+				//fanService
+				//speedHandling
+				//RotationSpeed
+				//setSpeed
+				//getSpeed
+				
+				
             case "TemperaturSensor":
                 this.TempSensorservice = new Service.TemperatureSensor(this.name);
                 this.TempSensorservice
-                    .getCharacteristic(Characteristic.CurrentTemperature)
-			.setProps( {
+                .getCharacteristic(Characteristic.CurrentTemperature)
+				.setProps( {
    				 maxValue: 60,
     				 minValue: -30})
                     .on('get', this.getTemperature.bind(this));
                 return [this.TempSensorservice];
                 break;
-	    case "AV":
+			
+			case "AV":
                 this.AVservice = new Service.Switch(this.name);
-  		this.AVservice
-  			.getCharacteristic(Characteristic.On)
+				this.AVservice
+					.getCharacteristic(Characteristic.On)
     				.on("set", this.setAVOn.bind(this))
     				.on("get", this.getAVOn.bind(this));
 
- 		 this.AVservice
-   			 .addCharacteristic(VolumeCharacteristic)
+				this.AVservice
+					.addCharacteristic(VolumeCharacteristic)
     			 	.on('get', this.getAVVolume.bind(this))
    			        .on('set', this.setAVVolume.bind(this));
 	
- 		 this.AVservice
+				this.AVservice
     			.addCharacteristic(ChannelCharacteristic)
     				.on('get', this.getAVChannel.bind(this))
     				.on('set', this.setAVChannel.bind(this));
-		 return [this.AVservice];
-		 break;
-	    case "CarbonDioxide":
-		this.CarbonDioxideservice = new Service.CarbonDioxideSensor(this.name);
-		this.CarbonDioxideservice
-                    .getCharacteristic(Characteristic.CarbonDioxideLevel)
-                    .on('get', this.getCarbonDioxideLevel.bind(this));
-                return [this.CarbonDioxideservice];
-                break;
-	    case "Humidity":
-		this.Humidityservice = new Service.HumiditySensor(this.name);
-		this.Humidityservice
-                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                    .on('get', this.getHumidityLevel.bind(this));
-                return [this.Humidityservice];
-                break;
-	    case "Blinds":
-		this.Blindservice = new Service.WindowCovering(this.name);
-		this.Blindservice
-		    .getCharacteristic(Characteristic.CurrentPosition)
-			.setProps( {
-				 unit: Characteristic.Units.PERCENTAGE,
-   				 maxValue: 100,
-    				 minValue: 0,
-    				 minStep: 20})
-		    .on('get' , this.getBlindsCurrentPosition.bind(this));
-		this.Blindservice
-		    .getCharacteristic(Characteristic.TargetPosition)
-			.setProps( {
-				 unit: Characteristic.Units.PERCENTAGE,
-   				 maxValue: 100,
-    				 minValue: 0,
-    				 minStep: 20})
-		    .on('set' , this.setBlindsCurrentPosition.bind(this));
-		this.Blindservice
-		    .getCharacteristic(Characteristic.PositionState)
-			.setProps( {
-   				 maxValue: 2,
-    				 minValue: 0,
-    				 minStep: 1})
-		    .on('get' , this.getPositionState.bind(this));
-		this.Blindservice
-                        .getCharacteristic(Characteristic.TargetHorizontalTiltAngle)
-			.setProps( {
-   				 maxValue: 100,
-    				 minValue: 0,
-    				 minStep: 20})
-                        .on('set', this.setBlindsHorizontalTiltAngle.bind(this));
-		this.Blindservice
-                        .getCharacteristic(Characteristic.CurrentHorizontalTiltAngle)
-			.setProps( {
-   				 maxValue: 100,
-    				 minValue: 0,
-    				 minStep: 20})
-                        .on('get', this.getBlindsHorizontalTiltAngle.bind(this));
+				return [this.AVservice];
+				break;
+				
+			case "CarbonDioxide":
+				this.CarbonDioxideservice = new Service.CarbonDioxideSensor(this.name);
+				this.CarbonDioxideservice
+							.getCharacteristic(Characteristic.CarbonDioxideLevel)
+							.on('get', this.getCarbonDioxideLevel.bind(this));
+						return [this.CarbonDioxideservice];
+						break;
+			case "Humidity":
+				this.Humidityservice = new Service.HumiditySensor(this.name);
+				this.Humidityservice
+						.getCharacteristic(Characteristic.CurrentRelativeHumidity)
+						.on('get', this.getHumidityLevel.bind(this));
+						return [this.Humidityservice];
+						break;
+			case "Blinds":
+				this.Blindservice = new Service.WindowCovering(this.name);
+				this.Blindservice
+					.getCharacteristic(Characteristic.CurrentPosition)
+					.setProps( {
+						 unit: Characteristic.Units.PERCENTAGE,
+						 maxValue: 100,
+							 minValue: 0,
+							 minStep: 20})
+					.on('get' , this.getBlindsCurrentPosition.bind(this));
+				this.Blindservice
+					.getCharacteristic(Characteristic.TargetPosition)
+					.setProps( {
+						 unit: Characteristic.Units.PERCENTAGE,
+						 maxValue: 100,
+							 minValue: 0,
+							 minStep: 20})
+					.on('set' , this.setBlindsCurrentPosition.bind(this));
+				this.Blindservice
+					.getCharacteristic(Characteristic.PositionState)
+					.setProps( {
+						 maxValue: 2,
+						 minValue: 0,
+						 minStep: 1})
+					.on('get' , this.getPositionState.bind(this));
+				this.Blindservice
+					.getCharacteristic(Characteristic.TargetHorizontalTiltAngle)
+					.setProps( {
+						 maxValue: 100,
+						 minValue: 0,
+						 minStep: 20})
+					.on('set', this.setBlindsHorizontalTiltAngle.bind(this));
+				this.Blindservice
+					.getCharacteristic(Characteristic.CurrentHorizontalTiltAngle)
+					.setProps( {
+						 maxValue: 100,
+						 minValue: 0,
+						 minStep: 20})
+					.on('get', this.getBlindsHorizontalTiltAngle.bind(this));
 
 
-		
-		return [informationService, this.Blindservice];
-		break;
+				
+				return [informationService, this.Blindservice];
+				break;
 
         }
     }
