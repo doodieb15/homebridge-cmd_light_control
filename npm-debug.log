@@ -1,0 +1,105 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@2.15.11
+3 info using node@v4.6.2
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/home/pi/homebridge-cmd_light_control',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /home/pi/.npm/homebridge-cmd_light_control/0.0.33/package.tgz not in flight; packing
+9 verbose correctMkdir /home/pi/.npm correctMkdir not in flight; initializing
+10 verbose tar pack [ '/home/pi/.npm/homebridge-cmd_light_control/0.0.33/package.tgz',
+10 verbose tar pack   '/home/pi/homebridge-cmd_light_control' ]
+11 verbose tarball /home/pi/.npm/homebridge-cmd_light_control/0.0.33/package.tgz
+12 verbose folder /home/pi/homebridge-cmd_light_control
+13 info prepublish homebridge-cmd_light_control@0.0.33
+14 verbose addLocalTarball adding from inside cache /home/pi/.npm/homebridge-cmd_light_control/0.0.33/package.tgz
+15 verbose correctMkdir /home/pi/.npm correctMkdir not in flight; initializing
+16 silly cache afterAdd homebridge-cmd_light_control@0.0.33
+17 verbose afterAdd /home/pi/.npm/homebridge-cmd_light_control/0.0.33/package/package.json not in flight; writing
+18 verbose correctMkdir /home/pi/.npm correctMkdir not in flight; initializing
+19 verbose afterAdd /home/pi/.npm/homebridge-cmd_light_control/0.0.33/package/package.json written
+20 silly publish { name: 'homebridge-cmd_light_control',
+20 silly publish   version: '0.0.33',
+20 silly publish   description: 'Homebridge Plug in to control my lights from cmd files',
+20 silly publish   main: 'index.js',
+20 silly publish   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+20 silly publish   repository:
+20 silly publish    { type: 'git',
+20 silly publish      url: 'git+https://github.com/doodieb15/homebridge-cmd_light_control.git' },
+20 silly publish   author: { name: 'Doodieb15' },
+20 silly publish   license: 'ISC',
+20 silly publish   bugs: { url: 'https://github.com/doodieb15/homebridge-cmd_light_control/issues' },
+20 silly publish   engines: { node: '>=0.12.0', homebridge: '>=0.2.0' },
+20 silly publish   homepage: 'https://github.com/doodieb15/homebridge-cmd_light_control#readme',
+20 silly publish   keywords: [ 'homebridge-plugin' ],
+20 silly publish   readme: '# homebridge-cmd_light_control\nHomebridge Plugin to control lights with cmd files (on, off, brightness)\n',
+20 silly publish   readmeFilename: 'README.md',
+20 silly publish   gitHead: '5cd3176806a0b0ec5b77a7478da2ebaa666448e6',
+20 silly publish   _id: 'homebridge-cmd_light_control@0.0.33',
+20 silly publish   _shasum: '1423ddae3a4e07fbb36e390f7b2f125e910955c2',
+20 silly publish   _from: '.' }
+21 verbose getPublishConfig undefined
+22 silly mapToRegistry name homebridge-cmd_light_control
+23 silly mapToRegistry using default registry
+24 silly mapToRegistry registry https://registry.npmjs.org/
+25 silly mapToRegistry data Result {
+25 silly mapToRegistry   raw: 'homebridge-cmd_light_control',
+25 silly mapToRegistry   scope: null,
+25 silly mapToRegistry   name: 'homebridge-cmd_light_control',
+25 silly mapToRegistry   rawSpec: '',
+25 silly mapToRegistry   spec: 'latest',
+25 silly mapToRegistry   type: 'tag' }
+26 silly mapToRegistry uri https://registry.npmjs.org/homebridge-cmd_light_control
+27 verbose publish registryBase https://registry.npmjs.org/
+28 silly publish uploading /home/pi/.npm/homebridge-cmd_light_control/0.0.33/package.tgz
+29 verbose request uri https://registry.npmjs.org/homebridge-cmd_light_control
+30 verbose request sending authorization for write operation
+31 info attempt registry request try #1 at 8:25:57 PM
+32 verbose request using bearer token for auth
+33 verbose request id 5e1c557a412147d1
+34 http request PUT https://registry.npmjs.org/homebridge-cmd_light_control
+35 http 403 https://registry.npmjs.org/homebridge-cmd_light_control
+36 verbose headers { 'content-type': 'application/json',
+36 verbose headers   'cache-control': 'max-age=300',
+36 verbose headers   'content-length': '92',
+36 verbose headers   'accept-ranges': 'bytes',
+36 verbose headers   date: 'Fri, 29 Sep 2017 18:25:59 GMT',
+36 verbose headers   via: '1.1 varnish',
+36 verbose headers   connection: 'keep-alive',
+36 verbose headers   'x-served-by': 'cache-hhn1547-HHN',
+36 verbose headers   'x-cache': 'MISS',
+36 verbose headers   'x-cache-hits': '0',
+36 verbose headers   'x-timer': 'S1506709558.418799,VS0,VE1081',
+36 verbose headers   vary: 'Accept-Encoding, Accept' }
+37 verbose request invalidating /home/pi/.npm/registry.npmjs.org/homebridge-cmd_light_control on PUT
+38 error publish Failed PUT 403
+39 verbose stack Error: You cannot publish over the previously published version 0.0.33. : homebridge-cmd_light_control
+39 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:302:12)
+39 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:290:14)
+39 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:210:14)
+39 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:187:22)
+39 verbose stack     at emitTwo (events.js:87:13)
+39 verbose stack     at Request.emit (events.js:172:7)
+39 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1044:10)
+39 verbose stack     at emitOne (events.js:77:13)
+39 verbose stack     at Request.emit (events.js:169:7)
+39 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:965:12)
+40 verbose statusCode 403
+41 verbose pkgid homebridge-cmd_light_control
+42 verbose cwd /home/pi/homebridge-cmd_light_control
+43 error Linux 4.9.35+
+44 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "publish"
+45 error node v4.6.2
+46 error npm  v2.15.11
+47 error code E403
+48 error You cannot publish over the previously published version 0.0.33. : homebridge-cmd_light_control
+49 error If you need help, you may report this error at:
+49 error     <https://github.com/npm/npm/issues>
+50 verbose exit [ 1, true ]
